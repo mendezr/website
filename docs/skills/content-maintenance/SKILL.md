@@ -164,12 +164,15 @@ stale, including for a locale file that no longer exists. Check
 `ls src/locales/` before trusting it: an absent file makes the task a
 new-locale addition, so the `SUPPORTED_LOCALES` edit above is required.
 
-The filename tag is matched exactly. `App.vue`, `DakotaApp.vue`, and
-`ServerApp.vue` select a locale only when `?lang=` or `navigator.language`
-equals an available tag, with no language-subtag fallback: a bare-language
-file (`cs`) is not picked for a `cs-CZ` browser, and a region file (`sk-SK`)
-is not picked for a bare `sk` browser. Keep the tag the issue names; changing
-the matching is a runtime change, not locale content.
+`App.vue`, `DakotaApp.vue`, and `ServerApp.vue` share `resolveLocale()` in
+`src/composables/useLocale.ts` for `?lang=` (which takes precedence) and
+`navigator.language`. Matching is case-insensitive. Simplified Chinese browser
+tags `zh-CN` and `zh-Hans-CN` select `zh-Hans`; an explicit Hans script also
+matches with other regional suffixes. Keep subtag boundaries intact and never
+infer Simplified from `zh-Hant-CN`: an explicit script outranks a region.
+Bare `zh` remains ambiguous, and supported `zh-HK`/`zh-TW` remain unchanged.
+Other unsupported tags have no fallback. Changing matching is runtime work,
+not locale content.
 
 ## Locale completeness
 
@@ -233,11 +236,12 @@ npx vitest run src/tests/locale-completeness.test.ts
 - [ ] Unlisted status is unchanged.
 - [ ] Relevant checks pass.
 
-Re-derive the exact-match locale selection (no language-subtag fallback):
+Re-derive locale selection and its script safeguards:
 
 ```bash
-rg -n "navigator.language|availableLocales.includes" \
-  src/App.vue src/DakotaApp.vue src/ServerApp.vue
+rg -n "navigator.language|resolveLocale" \
+  src/App.vue src/DakotaApp.vue src/ServerApp.vue src/composables/useLocale.ts
+npx vitest run src/tests/useLocale.test.ts
 ```
 
 ## Locale parity for a new or completed translation

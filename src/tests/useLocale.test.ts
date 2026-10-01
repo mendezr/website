@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { setLocale } from '../composables/useLocale'
+import { resolveLocale, setLocale } from '../composables/useLocale'
 import { i18n } from '../locales/schema'
 
 const DEFAULT_LOCALE = 'en-US'
@@ -43,6 +43,20 @@ describe('useLocale', () => {
 
   it('uses en-US as the default locale', () => {
     expect((i18n.global as any).locale).toBe(DEFAULT_LOCALE)
+  })
+
+  it.each(['zh-SG', 'zh-MY', 'ZH-sg', 'zh-my', 'zh-SG-u-nu-latn', 'zh-MY-u-nu-latn', 'zh-CN', 'zh-Hans', 'zh-Hans-SG', 'zh-Hans-MY'])('resolves Simplified Chinese %s', (tag) => {
+    expect(resolveLocale(tag)).toBe('zh-Hans')
+    setLocale(resolveLocale(tag)!)
+    expect((i18n.global as any).locale).toBe('zh-Hans')
+  })
+
+  it.each(['zh-HK', 'zh-TW', 'de-DE', 'uk'])('preserves supported locale %s', (tag) => {
+    expect(resolveLocale(tag)).toBe(tag)
+  })
+
+  it.each(['zh', 'zh-Hant-SG', 'zh-Hant-MY', 'zh-Hant-CN', 'zh-SGfoo', 'zh-MYfoo', 'zh-Hansfoo', 'xx-XX', '', null, undefined])('does not guess unsupported locale %s', (tag) => {
+    expect(resolveLocale(tag)).toBeUndefined()
   })
 
   it('switches the active locale', () => {

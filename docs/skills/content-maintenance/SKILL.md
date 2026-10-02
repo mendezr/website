@@ -174,6 +174,11 @@ and `zh-Hant-MY` must not select Simplified Chinese. Bare `zh` stays ambiguous,
 and supported `zh-HK`/`zh-TW` stay unchanged. Other unsupported tags have no
 fallback. Changing matching is runtime work, not locale content.
 
+Regional resolver extensions must retain the earlier resolver's regression
+cases, especially mixed-case explicit-script tags and whole-subtag rejection.
+Do not replace the original test matrix with only the new regions. Re-derive
+coverage with `npx vitest run src/tests/useLocale.test.ts`.
+
 ## Locale completeness
 
 `src/tests/locale-completeness.test.ts` warns on keys a locale is missing and

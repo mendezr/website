@@ -45,7 +45,7 @@ describe('useLocale', () => {
     expect((i18n.global as any).locale).toBe(DEFAULT_LOCALE)
   })
 
-  it.each(['zh-SG', 'zh-MY', 'ZH-sg', 'zh-my', 'zh-SG-u-nu-latn', 'zh-MY-u-nu-latn', 'zh-CN', 'zh-Hans', 'zh-Hans-SG', 'zh-Hans-MY'])('resolves Simplified Chinese %s', (tag) => {
+  it.each(['zh-SG', 'zh-MY', 'ZH-sg', 'zh-my', 'zh-SG-u-nu-latn', 'zh-MY-u-nu-latn', 'zh-CN', 'zh-Hans-CN', 'zh-Hans', 'ZH-hAnS-cn', 'zh-Hans-SG', 'zh-Hans-MY'])('resolves Simplified Chinese %s', (tag) => {
     expect(resolveLocale(tag)).toBe('zh-Hans')
     setLocale(resolveLocale(tag)!)
     expect((i18n.global as any).locale).toBe('zh-Hans')
@@ -55,7 +55,7 @@ describe('useLocale', () => {
     expect(resolveLocale(tag)).toBe(tag)
   })
 
-  it.each(['zh', 'zh-Hant-SG', 'zh-Hant-MY', 'zh-Hant-CN', 'zh-SGfoo', 'zh-MYfoo', 'zh-Hansfoo', 'xx-XX', '', null, undefined])('does not guess unsupported locale %s', (tag) => {
+  it.each(['zh', 'zh-Hant', 'zh-Hant-SG', 'zh-Hant-MY', 'zh-Hant-CN', 'zh-SGfoo', 'zh-MYfoo', 'zh-Hansfoo', 'zh-CNfoo', 'xx-XX', '', null, undefined])('does not guess unsupported locale %s', (tag) => {
     expect(resolveLocale(tag)).toBeUndefined()
   })
 
